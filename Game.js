@@ -2,12 +2,12 @@
         let Pt = document.getElementById("Pt");
         let PT1;
         let PTT;
-        if(!localStorage.getItem("PT1") || !localStorage.getItem("PT1")){
-        localStorage.setItem("PT1", 0);
-        localStorage.setItem("PTT", 0);
+        if(!sessionStorage.getItem("PT1") || !sessionStorage.getItem("PT1")){
+        sessionStorage.setItem("PT1", 0);
+        sessionStorage.setItem("PTT", 0);
         }
-        PT1 = localStorage.getItem("PT1");
-        PTT = localStorage.getItem("PTT");
+        PT1 = sessionStorage.getItem("PT1");
+        PTT = sessionStorage.getItem("PTT");
 
         Pt.innerHTML = `Puntaje: <span id='P1'>0</span> | Puntaje total: <span id='P2'>${PTT}</span>`;
     }
@@ -38,8 +38,8 @@
         }
 
         if(k.key=="x" && gm == 0){
-            localStorage.setItem("PT1", 0);
-            localStorage.setItem("PTT", 0);
+            sessionStorage.setItem("PT1", 0);
+            sessionStorage.setItem("PTT", 0);
             Pt.innerHTML = `Puntaje: 0 | Puntaje total: 0`
             Pt.style.animation = "N 3s"
             window.alert("Se han borrado tu puntaje.")
