@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Prompt</title>
+    <script>
+        window.onload = setInterval(function () { test() },100);
+
+        function test() {
+            const rList = ["red","green","blue","purple","black","pink","light_blue","yellow","cyan"]
+            const random = rList[Math.floor(Math.random() * rList.length)];
+            document.body.style.backgroundColor = random
+            var fecha = new Date().getFullYear()
+        console.log(fecha);
+        }
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
