@@ -1,0 +1,37 @@
+<body>
+<link rel="stylesheet" href="Style.css">
+<script src="Game.js"></script>
+    <h1 id="Pt" style="position: fixed;left:750px;display:none;transition:3s;z-index:10;">Puntaje: <span id='P1'>0</span> | Puntaje total: <span id='P2'>0</span></h1>
+    <section id="game" style="display: none;transition:1.3s">
+        <p id="staticBG" style="z-index:-50;position:fixed;top:-15px;left:-10px;background-image: url(Img/StaticBG.png);background-position-y:-330px;background-size:100% 135%"></p>
+        <p id="Parallax0" style="z-index:-49;position:fixed;top:-15px;left:-10px;background-image: url(Img/Parallax0.png);background-position-y:-330px;background-size:100% 135%"></p>
+        <p id="Parallax1" style="z-index:-48;position:fixed;top:-15px;left:-10px;background-image: url(Img/Parallax1.png);background-position-y:-330px;background-size:100% 135%"></p>
+        <p id="Parallax2" style="z-index:-47;position:fixed;top:-15px;left:-10px;background-image: url(Img/Parallax2.png);background-position-y:-330px;background-size:100% 135%"></p>
+        <script>
+            document.getElementById("staticBG").style.width = `${window.outerWidth}px`
+            document.getElementById("staticBG").style.height = `${window.innerHeight}px`
+            document.getElementById("Parallax0").style.width = `${window.outerWidth}px`
+            document.getElementById("Parallax0").style.height = `${window.innerHeight}px`
+            document.getElementById("Parallax1").style.width = `${window.outerWidth}px`
+            document.getElementById("Parallax1").style.height = `${window.innerHeight}px`
+            document.getElementById("Parallax2").style.width = `${window.outerWidth}px`
+            document.getElementById("Parallax2").style.height = `${window.innerHeight}px`
+        </script>
+
+
+        <h1 id="Rn" style="position: fixed;top:500px;left:300px"><img style="width: 100px;image-rendering: pixelated;" src="Img/Rn.png" alt=""></h1>
+    
+        <h2 id="Ct1" style="position: fixed;top:500px;left:1980px"><img style="width: 100px;image-rendering: pixelated;" src="Img/Ct.png" alt=""></h1> 
+    </section>
+
+    <section id="gameover" style="z-index:10;text-align: center;font-size:75px;position:fixed;top:150px;left:400px;display:none;transition:3s;">
+        <h1>Has perdido.</h1>
+        <br>
+        <br>
+        <h2 style="font-size:75px;">Pulsa "R" para reintentar.<br>Pulsa "X" para borrar tu record.</h2>
+    </section>
+    
+
+        <h1 id="stMsg" style="position: fixed;top:250px;left:500px;font-size:75px;transition:3s;animation:fadeIn 1.2s">Pulsa ENTER para iniciar.</h1>
+        <h1 id="jpMsg" style="position: fixed;top:700px;left:500px;font-size:75px;transition:3s;animation:fadeIn 1.2s;display:none">Pulsa ESPACIO para saltar.</h1>
+    </body>
