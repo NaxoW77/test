@@ -34,7 +34,6 @@ let dvd = {
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    pickColor();
     update();
 })();
 
@@ -60,7 +59,6 @@ function update() {
 function checkHitBox(){
     if(dvd.x+dvd.img.width*scale >= canvas.width || dvd.x <= 0){
         dvd.xspeed *= -1;
-        pickColor();
     }
         
     if(dvd.y+dvd.img.height*scale >= canvas.height || dvd.y <= 0){
