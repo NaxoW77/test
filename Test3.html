@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Bouncing DVD Logo</title>
+        <title>La juerza del pirucho rebotante</title>
         <style>
             * {margin:0; padding: 0; color:red;}
         </style>
@@ -13,7 +13,7 @@
                 window.location.reload()
             },true)
 let speed = 20;
-let scale = 0.27; // Image scale (I work on 1080p monitor)
+let scale = 0.27;
 let canvas;
 let ctx;
 let logoColor;
@@ -29,9 +29,8 @@ let dvd = {
 (function main(){
     canvas = document.getElementById("tv-screen");
     ctx = canvas.getContext("2d");
-    dvd.img.src = 'C:/Users/Apuy/Downloads/Img/A.jpeg';
-
-    //Draw the "tv screen"
+    dvd.img.src = 'Img/A.jpeg';
+    
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -41,23 +40,23 @@ let dvd = {
 
 function update() {
     setTimeout(() => {
-        //Draw the canvas background
+        
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //Draw DVD Logo and his background
+        
         ctx.fillStyle = logoColor;
         ctx.fillRect(dvd.x, dvd.y, dvd.img.width*scale, dvd.img.height*scale);
         ctx.drawImage(dvd.img, dvd.x, dvd.y, dvd.img.width*scale, dvd.img.height*scale);
-        //Move the logo
+        
         dvd.x+=dvd.xspeed;
         dvd.y+=dvd.yspeed;
-        //Check for collision 
+        
         checkHitBox();
         update();   
     }, speed)
 }
 
-//Check for border collision
+
 function checkHitBox(){
     if(dvd.x+dvd.img.width*scale >= canvas.width || dvd.x <= 0){
         dvd.xspeed *= -1;
@@ -66,17 +65,7 @@ function checkHitBox(){
         
     if(dvd.y+dvd.img.height*scale >= canvas.height || dvd.y <= 0){
         dvd.yspeed *= -1;
-        pickColor();
     }    
-}
-
-//Pick a random color in RGB format
-function pickColor(){
-    r = Math.random() * (254 - 0) + 0;
-    g = Math.random() * (254 - 0) + 0;
-    b = Math.random() * (254 - 0) + 0;
-
-    logoColor = 'rgb('+r+','+g+', '+b+')';
 }
         </script>
     </body>
