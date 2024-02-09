@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANT</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: rgb(0, 0, 0);
+            font-family:monospace;
+            border: 3px solid black;
+        }
+
+        table {
+            border: 3px solid black;
+            margin: 0;
+            padding: 0px;
+            width: 255px;
+            height: 255px;
+            position: fixed;
+            border-spacing: 1px;
+            background-color: white;
+        }
+
+        th,
+        tr,
+        table {
+            padding: 0;
+            margin: 0;
+        }
+
+        th {
+
+            margin: 0;
+            padding: 0px;
+            background-color: rgb(147, 0, 160);
+            width: 1px;
+            height: 1px;
+            font-size: 3px;
+        }
+
+        @keyframes fade{
+            from {opacity:1}
+            to {opacity:0}
+        }
+
+        h2{
+            margin-left: -30px;
+            width:450px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body onload="start();fillTable()" onresize="start()">
+    <table id="table0"></table>
+    <h1 id="status" style="color:red;position:fixed;left:0px;width:500px;text-align: center;opacity:0;text-shadow: 0px 0px 5px black;;">Se detuvo una ejecución.</h1>
+    <h1 id="stop" style="color:red;position:fixed;left:500px;display:none;text-decoration: underline;font-size: 50px;text-shadow: 0px 0px 5px black;">[Pausa]</h1>
+
+    <ul id="stepsH" style="margin-top: 67px;"></ul>
+
+</body>
+<script>
+    var pause = 0;
+    var fields = 100;
+    var speed = 1;
+    var schem = "RL";
+    
+
+    var fields = parseInt(window.prompt("Ingrese el tamaño de la tabla.\n\nUn número alto puede provocar ralentización o problemas de rendimiento.\n\n(Por defecto: 100).\n\nEscribe 0 para establecer todo por defecto."))
+    if (fields !== 0) {
+        if (!fields || isNaN(fields) || fields < 1) {
+            alert("Valor nulo o inválido. Estableciendo valor por defecto.")
+            fields = 100;
+        }
+
+        var speed = parseInt(window.prompt("Ingrese la velocidad del puntero (En milisegundos).\n\n(Por defecto: 1)."))
+        if (!speed || isNaN(speed) || speed < 1) {
+            alert("Valor nulo o inválido. Estableciendo valor por defecto.")
+            speed = 1;
+        }
+
+        var schem = window.prompt("Ingrese el esquema de movimiento, mínimo 2 letras.\n(L=Izquierda | R=Derecha ).\n\nEjemplos:\n\"RLR\" (Caos total).\n\"LLRR\" (Simetría).\n\"LRRRRRLLR\" (Cuadrado).\n\"LLRRRLRLRLLR\"(Camino complejo) \n\"RRLLLRLLLRRR\" (Triángulo creciente).\n\n(Por defecto: \"RL\").")
+        if (!schem || schem.split("").length < 2) {
+            alert("Valor nulo o inválido. Estableciendo valor por defecto.")
+            schem = "RL";
+        } else {
+            schem=schem.toUpperCase()
+            var testS = schem.split("")
+            for (x in testS) {
+                if (testS[x] == "R" || testS[x] == "L") {
+                } else {
+                    alert("Valor inválido. Estableciendo valor por defecto.")
+                    schem = "RL"
+                    break;
+                }
+            }
+        }
+    } else {
+        fields = 100;
+    }
+    alert(`El tamaño de tabla ingresado es ${fields} filas y columnas.\nLa velocidad del puntero es de ${speed} milisegundo/s.\nEl esquema de movimiento es \"${schem}\".\n\nPulsa en cualquier parte dentro del rectángulo para comenzar.\nPulsa la tecla espacio para pausar.\nPulsa cualquier ejecución para detenerla.\nSi una ejecución toca un borde se detendrá.`)
+
+    function start() {
+        document.getElementById("table0").style.left = window.innerWidth / 4 + "px";
+        document.getElementById("table0").style.top = "0px";
+        document.getElementById("table0").style.width = (window.innerHeight / 8) * 8 + "px";
+        document.getElementById("table0").style.height = (window.innerHeight / 8) * 8 + "px";
+    }
+
+    function fillTable() {
+        var rowCount = 1;
+        var fieldCount = 1;
+        let table = document.getElementById("table0");
+        for (var x = 0; x < fields; x++) {
+            let newRow = document.createElement("tr")
+            newRow.setAttribute("id", rowCount);
+            var fieldCount = 1;
+            rowCount++;
+
+            for (var y = 0; y < fields; y++) {
+                let newField = document.createElement("th")
+                newField.setAttribute("id", rowCount - 1 + "-" + fieldCount);
+                newField.style.backgroundColor = `rgb(255,255,255)`
+                newField.addEventListener("click", paintSelf, false)
+                fieldCount++;
+                newRow.appendChild(newField)
+            }
+            table.appendChild(newRow);
+        }
+
+
+    }
+    var antId = 0;
+    function paintSelf() {
+        var status = document.getElementById("status");
+        var cursor = {
+            xPos: 0,
+            yPos: 0,
+            dir: 1
+        }
+        ++antId;
+        var steps = document.createElement("h2")
+        steps.style.backgroundColor = "yellow"
+        document.getElementById("stepsH").appendChild(steps)
+
+        var coords = this.id.split("-");
+        cursor.xPos = parseInt(coords[1]);
+        cursor.yPos = parseInt(coords[0]);
+        status.style.transition = "";status.style.color = "green";status.innerHTML = "Se inició una nueva ejecución.";status.style.opacity="1";
+        setTimeout(function(){status.style.transition = "3s";status.style.opacity="0"},1);
+        updateTable(cursor,steps,antId)
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function updateTable(cursor,steps,antId) {
+        var status = document.getElementById("status");
+        let sucs = schem.split("")
+        let customColors = [];
+
+        customColors.push("rgb(255, 255, 255)", "rgb(0, 0, 0)")
+        for (c = 0; c < sucs.length - 2; c++) {
+            let customColor = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
+            customColors.push(customColor)
+        }
+
+        var rightColors = [];
+        var leftColors = [];
+
+        for (i in sucs) {
+            if (sucs[i] == "R") {
+                rightColors.push(customColors[i])
+            } else {
+                leftColors.push(customColors[i])
+            }
+        }
+
+        var count = 0;
+
+        function mC(){end();}
+        steps.addEventListener("click",mC,false)
+        function mE(){this.style.backgroundColor = "orange";}
+        steps.addEventListener("mouseenter",mE,false)
+        function mL(){this.style.backgroundColor = "yellow"}
+        steps.addEventListener("mouseleave",mL,false)
+
+        function end(){
+            status.style.transition = "";status.style.color = "red";status.innerHTML = "Se detuvo una ejecución.";status.style.opacity="1";
+                setTimeout(function(){status.style.transition = "3s";status.style.opacity="0"},1);
+                steps.style.backgroundColor = "rgb(128,0,0)";
+                clearInterval(mainIntv)
+                steps.removeEventListener("click", mC);
+                steps.removeEventListener("mouseenter", mE);
+                steps.removeEventListener("mouseleave", mL);
+        }
+
+        var oldcount;
+        let mainIntv = setInterval(async function () {
+            if(pause==0){
+            
+
+            var currentColor = document.getElementById(`${cursor.yPos}-${cursor.xPos}`)
+            if (!currentColor) {
+                end();
+            }else{
+
+            oldcount = count
+            steps.innerHTML = `Ejecución #${antId}: ${count} pasos.`
+
+            for (var x in customColors) {
+                if (customColors[x] == currentColor.style.backgroundColor) {
+                    let match = sucs[x]
+
+                    var newColor = "";
+
+                    for (y in customColors) {
+                        if (customColors[y] == currentColor.style.backgroundColor) {
+                            if (customColors[parseInt(y) + 1]) {
+                                newColor = customColors[parseInt(y) + 1]
+                            } else {
+                                newColor = customColors[0];
+                            }
+                            break;
+                        }
+                    }
+                    rotateCursor(cursor, `turn${match}`);
+                    
+                    currentColor.style.backgroundColor = newColor;
+                    moveCursor(cursor);
+                    count++;
+                    break;
+                }
+            }
+            if(oldcount == count){
+                end()
+            }
+        }
+            }
+        }, speed)
+        
+    }
+
+
+    function rotateCursor(cursor, direction) {
+        switch (direction) {
+            case "turnR":
+                cursor.dir += 1;
+                break;
+            case "turnL":
+                cursor.dir -= 1;
+                break;
+        }
+        if (cursor.dir == 4) {
+            cursor.dir = 0
+        } else if (cursor.dir == -1) {
+            cursor.dir = 3
+        }
+    }
+
+    function moveCursor(cursor) {
+        switch (cursor.dir) {
+            case 0:
+                cursor.xPos += 1;
+                break;
+
+            case 1:
+                cursor.yPos += 1;
+                break;
+
+            case 2:
+                cursor.xPos -= 1;
+                break;
+
+            case 3:
+                cursor.yPos -= 1;
+                break;
+
+        }
+    }
+
+    document.addEventListener("keypress", function(key){
+        var pauseT = document.getElementById("stop");
+        if (key.key==" "){
+            if(pause == 1){
+                pause=0;
+                pauseT.style.display = "none";
+                document.getElementById("table0").style.filter = ""
+        }else{
+                pause=1;
+                pauseT.style.left = parseInt(window.innerWidth)/2-100+"px"
+                pauseT.style.color = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
+                document.getElementById("table0").style.filter = "blur(1px)"
+                pauseT.style.display = "";
+        }
+        }
+    })
+</script>
+
+</html>
