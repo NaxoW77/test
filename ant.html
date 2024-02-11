@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             background-color: rgb(0, 0, 0);
-            font-family:monospace;
+            font-family: monospace;
             border: 3px solid black;
         }
 
@@ -42,15 +42,25 @@
             font-size: 3px;
         }
 
-        @keyframes fade{
-            from {opacity:1}
-            to {opacity:0}
+        @keyframes fade {
+            from {
+                opacity: 1
+            }
+
+            to {
+                opacity: 0
+            }
         }
 
-        h2{
+        h1 {
+            pointer-events: none;
+        }
+
+        h2 {
             margin-left: -30px;
-            width:450px;
+            width: 450px;
             text-align: center;
+            pointer-events: auto;
         }
     </style>
 
@@ -58,10 +68,14 @@
 
 <body onload="start();fillTable()" onresize="start()">
     <table id="table0"></table>
-    <h1 id="status" style="color:red;position:fixed;left:0px;width:500px;text-align: center;opacity:0;text-shadow: 0px 0px 5px black;;">Se detuvo una ejecución.</h1>
-    <h1 id="stop" style="color:red;position:fixed;left:500px;display:none;text-decoration: underline;font-size: 50px;text-shadow: 0px 0px 5px black;">[Pausa]</h1>
+    <h1 id="status"
+        style="color:red;position:fixed;left:0px;width:500px;text-align: center;opacity:0;text-shadow: 0px 0px 5px black;">
+        Se detuvo una ejecución.</h1>
+    <h1 id="stop"
+        style="color:red;position:fixed;left:500px;display:none;text-decoration: underline;font-size: 50px;text-shadow: 0px 0px 5px black;">
+        [Pausa]</h1>
 
-    <ul id="stepsH" style="margin-top: 67px;"></ul>
+    <ul id="stepsH" style="top: 40px;opacity:75%;position:fixed;pointer-events:none;"></ul>
 
 </body>
 <script>
@@ -69,7 +83,9 @@
     var fields = 100;
     var speed = 1;
     var schem = "RL";
-    
+    var colorP = "N"
+    var cMsg = ""
+
 
     var fields = parseInt(window.prompt("Ingrese el tamaño de la tabla.\n\nUn número alto puede provocar ralentización o problemas de rendimiento.\n\n(Por defecto: 100).\n\nEscribe 0 para establecer todo por defecto."))
     if (fields !== 0) {
@@ -89,7 +105,7 @@
             alert("Valor nulo o inválido. Estableciendo valor por defecto.")
             schem = "RL";
         } else {
-            schem=schem.toUpperCase()
+            schem = schem.toUpperCase()
             var testS = schem.split("")
             for (x in testS) {
                 if (testS[x] == "R" || testS[x] == "L") {
@@ -100,10 +116,25 @@
                 }
             }
         }
+        if(schem.split("").length > 2){
+        var colorP = window.prompt("Se detectaron más de dos instrucciones en el esquema de movimiento. ¿Desea usar colores distintos para cada ejecución? (Y/N)\n\nEsto hará que las sucesiones se cancelen si llegan a colisionar.\n\n(Por defecto: N).");
+        colorP = colorP.toUpperCase();
+        if (colorP == "Y") {
+            colorP = "Y";
+            cMsg = "u otra ejecución ";
+        } else if (colorP == "N") {
+            colorP = "N";
+        } else {
+            alert("Valor nulo o inválido. Estableciendo valor por defecto.")
+            colorP = "N";
+        }
+    }
+
     } else {
         fields = 100;
     }
-    alert(`El tamaño de tabla ingresado es ${fields} filas y columnas.\nLa velocidad del puntero es de ${speed} milisegundo/s.\nEl esquema de movimiento es \"${schem}\".\n\nPulsa en cualquier parte dentro del rectángulo para comenzar.\nPulsa la tecla espacio para pausar.\nPulsa cualquier ejecución para detenerla.\nSi una ejecución toca un borde se detendrá.`)
+
+    alert(`El tamaño de tabla ingresado es ${fields} filas y columnas.\nLa velocidad del puntero es de ${speed} milisegundo/s.\nEl esquema de movimiento es \"${schem}\".\n\nPulsa en cualquier parte dentro del rectángulo para comenzar u otra vez para generar.\nHaz click derecho para alternar la cuadrícula.\nPulsa la tecla espacio para pausar.\nPulsa cualquier ejecución a la izquierda para detenerla.\nSi una ejecución toca un borde ${cMsg}se detendrá.`)
 
     function start() {
         document.getElementById("table0").style.left = window.innerWidth / 4 + "px";
@@ -111,8 +142,17 @@
         document.getElementById("table0").style.width = (window.innerHeight / 8) * 8 + "px";
         document.getElementById("table0").style.height = (window.innerHeight / 8) * 8 + "px";
     }
-
+    var customColors = [];
     function fillTable() {
+        if (colorP == "N") {
+            let sucs = schem.split("")
+            customColors.push("rgb(255, 255, 255)", "rgb(0, 0, 0)")
+            for (c = 0; c < sucs.length - 2; c++) {
+                let customColor = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
+                customColors.push(customColor)
+            }
+        }
+
         var rowCount = 1;
         var fieldCount = 1;
         let table = document.getElementById("table0");
@@ -135,6 +175,7 @@
 
 
     }
+
     var antId = 0;
     function paintSelf() {
         var status = document.getElementById("status");
@@ -144,6 +185,17 @@
             dir: 1
         }
         ++antId;
+        if (colorP == "Y") {
+
+            customColors = [];
+
+            let sucs = schem.split("")
+            customColors.push("rgb(255, 255, 255)", "rgb(0, 0, 0)")
+            for (c = 0; c < sucs.length - 2; c++) {
+                let customColor = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
+                customColors.push(customColor)
+            }
+        }
         var steps = document.createElement("h2")
         steps.style.backgroundColor = "yellow"
         document.getElementById("stepsH").appendChild(steps)
@@ -151,99 +203,81 @@
         var coords = this.id.split("-");
         cursor.xPos = parseInt(coords[1]);
         cursor.yPos = parseInt(coords[0]);
-        status.style.transition = "";status.style.color = "green";status.innerHTML = "Se inició una nueva ejecución.";status.style.opacity="1";
-        setTimeout(function(){status.style.transition = "3s";status.style.opacity="0"},1);
-        updateTable(cursor,steps,antId)
+        status.style.transition = ""; status.style.color = "green"; status.innerHTML = "Se inició una nueva ejecución."; status.style.opacity = "1";
+        setTimeout(function () { status.style.transition = "3s"; status.style.opacity = "0" }, 1);
+        updateTable(cursor, steps, antId, customColors)
     }
 
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    async function updateTable(cursor,steps,antId) {
+    async function updateTable(cursor, steps, antId, colors) {
         var status = document.getElementById("status");
         let sucs = schem.split("")
-        let customColors = [];
-
-        customColors.push("rgb(255, 255, 255)", "rgb(0, 0, 0)")
-        for (c = 0; c < sucs.length - 2; c++) {
-            let customColor = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
-            customColors.push(customColor)
-        }
-
-        var rightColors = [];
-        var leftColors = [];
-
-        for (i in sucs) {
-            if (sucs[i] == "R") {
-                rightColors.push(customColors[i])
-            } else {
-                leftColors.push(customColors[i])
-            }
-        }
 
         var count = 0;
 
-        function mC(){end();}
-        steps.addEventListener("click",mC,false)
-        function mE(){this.style.backgroundColor = "orange";}
-        steps.addEventListener("mouseenter",mE,false)
-        function mL(){this.style.backgroundColor = "yellow"}
-        steps.addEventListener("mouseleave",mL,false)
+        function mC() { end(); }
+        steps.addEventListener("click", mC, false)
+        function mE() { this.style.backgroundColor = "orange"; }
+        steps.addEventListener("mouseenter", mE, false)
+        function mL() { this.style.backgroundColor = "yellow" }
+        steps.addEventListener("mouseleave", mL, false)
 
-        function end(){
-            status.style.transition = "";status.style.color = "red";status.innerHTML = "Se detuvo una ejecución.";status.style.opacity="1";
-                setTimeout(function(){status.style.transition = "3s";status.style.opacity="0"},1);
-                steps.style.backgroundColor = "rgb(128,0,0)";
-                clearInterval(mainIntv)
-                steps.removeEventListener("click", mC);
-                steps.removeEventListener("mouseenter", mE);
-                steps.removeEventListener("mouseleave", mL);
+        function end() {
+            status.style.transition = ""; status.style.color = "red"; status.innerHTML = "Se detuvo una ejecución."; status.style.opacity = "1";
+            setTimeout(function () { status.style.transition = "3s"; status.style.opacity = "0" }, 1);
+            steps.style.backgroundColor = "rgb(128,0,0)";
+            clearInterval(mainIntv)
+            steps.removeEventListener("click", mC);
+            steps.removeEventListener("mouseenter", mE);
+            steps.removeEventListener("mouseleave", mL);
         }
 
         var oldcount;
         let mainIntv = setInterval(async function () {
-            if(pause==0){
-            
+            if (pause == 0) {
 
-            var currentColor = document.getElementById(`${cursor.yPos}-${cursor.xPos}`)
-            if (!currentColor) {
-                end();
-            }else{
 
-            oldcount = count
-            steps.innerHTML = `Ejecución #${antId}: ${count} pasos.`
+                var currentColor = document.getElementById(`${cursor.yPos}-${cursor.xPos}`)
+                if (!currentColor) {
+                    end();
+                } else {
 
-            for (var x in customColors) {
-                if (customColors[x] == currentColor.style.backgroundColor) {
-                    let match = sucs[x]
+                    oldcount = count
+                    steps.innerHTML = `Ejecución #${antId}: ${count} pasos.`
 
-                    var newColor = "";
+                    for (var x in colors) {
+                        if (colors[x] == currentColor.style.backgroundColor) {
+                            let match = sucs[x]
 
-                    for (y in customColors) {
-                        if (customColors[y] == currentColor.style.backgroundColor) {
-                            if (customColors[parseInt(y) + 1]) {
-                                newColor = customColors[parseInt(y) + 1]
-                            } else {
-                                newColor = customColors[0];
+                            var newColor = "";
+
+                            for (y in colors) {
+                                if (colors[y] == currentColor.style.backgroundColor) {
+                                    if (colors[parseInt(y) + 1]) {
+                                        newColor = colors[parseInt(y) + 1]
+                                    } else {
+                                        newColor = colors[0];
+                                    }
+                                    break;
+                                }
                             }
+                            rotateCursor(cursor, `turn${match}`);
+
+                            currentColor.style.backgroundColor = newColor;
+                            moveCursor(cursor);
+                            count++;
                             break;
                         }
                     }
-                    rotateCursor(cursor, `turn${match}`);
-                    
-                    currentColor.style.backgroundColor = newColor;
-                    moveCursor(cursor);
-                    count++;
-                    break;
+                    if (oldcount == count) {
+                        end()
+                    }
                 }
             }
-            if(oldcount == count){
-                end()
-            }
-        }
-            }
         }, speed)
-        
+
     }
 
 
@@ -283,21 +317,49 @@
 
         }
     }
-
-    document.addEventListener("keypress", function(key){
-        var pauseT = document.getElementById("stop");
-        if (key.key==" "){
-            if(pause == 1){
-                pause=0;
-                pauseT.style.display = "none";
-                document.getElementById("table0").style.filter = ""
-        }else{
-                pause=1;
-                pauseT.style.left = parseInt(window.innerWidth)/2-100+"px"
-                pauseT.style.color = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
-                document.getElementById("table0").style.filter = "blur(1px)"
-                pauseT.style.display = "";
+    var cellspacing = 1;
+    document.addEventListener("auxclick", cellSwitch, false)
+    document.addEventListener('touchstart', function (e) {
+        if (e.touches.length == 2) {
+            cellSwitch();
         }
+        if (e.touches.length > 3) {
+            Pause()
+        }
+    });
+
+    function cellSwitch() {
+        document.oncontextmenu = (ev) => {
+            ev.preventDefault();
+        }
+
+        if (cellspacing == 1) {
+            cellspacing = 0;
+            document.getElementById("table0").style.borderSpacing = "0px"
+        } else {
+            cellspacing = 1;
+            document.getElementById("table0").style.borderSpacing = "1px"
+        }
+    }
+
+    function Pause() {
+        var pauseT = document.getElementById("stop");
+        if (pause == 1) {
+            pause = 0;
+            pauseT.style.display = "none";
+            document.getElementById("table0").style.filter = ""
+        } else {
+            pause = 1;
+            pauseT.style.left = parseInt(window.innerWidth) / 2 - 100 + "px"
+            pauseT.style.color = `rgb(${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)}, ${32 + Math.round(Math.random() * 192)})`
+            document.getElementById("table0").style.filter = "blur(1px)"
+            pauseT.style.display = "";
+        }
+    }
+
+    document.addEventListener("keypress", function (key) {
+        if (key.key == " ") {
+            Pause();
         }
     })
 </script>
