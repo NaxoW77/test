@@ -328,22 +328,24 @@
         if (e.touches.length == 2) {
             cellSwitch();
         }
-        if (e.touches.length == 2) {
+        if (e.touches.length > 2) {
             Pause()
         }
-
+        hide();
     }, false);
 
     var touchDelay;
-    document.addEventListener("mousedown", function (e) {
-        touchDelay = setTimeout(hide, 1000);
-    }, false)
+    document.addEventListener("mousedown", hide, false)
+    document.addEventListener("touchend", function () {
+        clearTimeout(touchDelay)
+    }, false);
     document.addEventListener("mouseup", function () {
         clearTimeout(touchDelay)
     }, false);
 
     var hidden = 0;
     function hide() {
+        touchDelay = setTimeout(function(){
         let stepsH = document.getElementById("stepsH");
         if (hidden == 0) {
             hidden = 1;
@@ -352,6 +354,7 @@
             hidden = 0
             stepsH.style.opacity = "50%";
         }
+    }, 1000);
     }
 
     function cellSwitch() {
