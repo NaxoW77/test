@@ -138,7 +138,7 @@
         alert("Respuesta inválida. Estableciendo todo por defecto.")
     }
 
-    alert(`El tamaño de tabla ingresado es ${fields} filas y columnas.\nLa velocidad del puntero es de ${speed} milisegundo/s.\nEl esquema de movimiento es \"${schem}\".\n\nPulsa en cualquier parte dentro del rectángulo para comenzar u otra vez para generar.\nHaz click derecho para alternar la cuadrícula.\nPulsa la tecla espacio para pausar.\nPulsa cualquier ejecución a la izquierda para detenerla.\nSi una ejecución toca un borde ${cMsg}se detendrá.`)
+    alert(`El tamaño de tabla ingresado es ${fields} filas y columnas.\nLa velocidad del puntero es de ${speed} milisegundo/s.\nEl esquema de movimiento es \"${schem}\".\n\nPulsa en cualquier parte dentro del rectángulo para comenzar u otra vez para generar.\nHaz click derecho para alternar la cuadrícula.\nPulsa la tecla espacio para pausar.\nMantén pulsado para ocultar los pasos.\nPulsa cualquier ejecución a la izquierda para detenerla.\nSi una ejecución toca un borde ${cMsg}se detendrá.`)
 
     function start() {
         document.getElementById("table0").style.left = window.innerWidth / 4 + "px";
@@ -325,13 +325,16 @@
 
     document.addEventListener("auxclick", cellSwitch, false)
     document.addEventListener('touchstart', function (e) {
+        if (e.touches.length == 1){
+            hide();
+        }
         if (e.touches.length == 2) {
             cellSwitch();
         }
         if (e.touches.length > 2) {
             Pause()
         }
-        hide();
+        
     }, false);
 
     var touchDelay;
@@ -354,7 +357,7 @@
             hidden = 0
             stepsH.style.opacity = "50%";
         }
-    }, 1000);
+    }, 750);
     }
 
     function cellSwitch() {
