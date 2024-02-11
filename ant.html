@@ -75,7 +75,7 @@
         style="color:red;position:fixed;left:500px;display:none;text-decoration: underline;font-size: 50px;text-shadow: 0px 0px 5px black;">
         [Pausa]</h1>
 
-    <ul id="stepsH" style="top: 40px;opacity:75%;position:fixed;pointer-events:none;"></ul>
+    <ul id="stepsH" style="top: 40px;opacity:50%;position:fixed;pointer-events:none;"></ul>
 
 </body>
 <script>
@@ -86,9 +86,11 @@
     var colorP = "N"
     var cMsg = ""
 
+    var opt = window.prompt("Bienvenido.\n\nSe recomienda ejecutar el programa en modo horizontal.\n\n¿Quieres configurar el programa antes de iniciar? (Y/N)");
+        opt = opt.toUpperCase();
+        if (opt == "Y") {
 
-    var fields = parseInt(window.prompt("Ingrese el tamaño de la tabla.\n\nUn número alto puede provocar ralentización o problemas de rendimiento.\n\n(Por defecto: 100).\n\nEscribe 0 para establecer todo por defecto."))
-    if (fields !== 0) {
+    var fields = parseInt(window.prompt("Ingrese el tamaño de la tabla.\n\nUn número alto puede provocar ralentización o problemas de rendimiento.\n\n(Por defecto: 100)."))
         if (!fields || isNaN(fields) || fields < 1) {
             alert("Valor nulo o inválido. Estableciendo valor por defecto.")
             fields = 100;
@@ -125,13 +127,15 @@
         } else if (colorP == "N") {
             colorP = "N";
         } else {
-            alert("Valor nulo o inválido. Estableciendo valor por defecto.")
+            alert("Respuesta inválida. Estableciendo valor por defecto.")
             colorP = "N";
         }
     }
 
+    } else if (opt == "N") {
+        alert("Se establecerá todo por defecto.")
     } else {
-        fields = 100;
+        alert("Respuesta inválida. Estableciendo todo por defecto.")
     }
 
     alert(`El tamaño de tabla ingresado es ${fields} filas y columnas.\nLa velocidad del puntero es de ${speed} milisegundo/s.\nEl esquema de movimiento es \"${schem}\".\n\nPulsa en cualquier parte dentro del rectángulo para comenzar u otra vez para generar.\nHaz click derecho para alternar la cuadrícula.\nPulsa la tecla espacio para pausar.\nPulsa cualquier ejecución a la izquierda para detenerla.\nSi una ejecución toca un borde ${cMsg}se detendrá.`)
@@ -323,7 +327,7 @@
         if (e.touches.length == 2) {
             cellSwitch();
         }
-        if (e.touches.length > 3) {
+        if (e.touches.length > 2) {
             Pause()
         }
     });
