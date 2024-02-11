@@ -87,10 +87,10 @@
     var cMsg = ""
 
     var opt = window.prompt("Bienvenido.\n\n¿Quieres configurar el programa antes de iniciar? (Y/N)");
-        opt = opt.toUpperCase();
-        if (opt == "Y") {
+    opt = opt.toUpperCase();
+    if (opt == "Y") {
 
-    var fields = parseInt(window.prompt("Ingrese el tamaño de la tabla.\n\nUn número alto puede provocar ralentización o problemas de rendimiento.\n\n(Por defecto: 100)."))
+        var fields = parseInt(window.prompt("Ingrese el tamaño de la tabla.\n\nUn número alto puede provocar ralentización o problemas de rendimiento.\n\n(Por defecto: 100)."))
         if (!fields || isNaN(fields) || fields < 1) {
             alert("Valor nulo o inválido. Estableciendo valor por defecto.")
             fields = 100;
@@ -118,19 +118,19 @@
                 }
             }
         }
-        if(schem.split("").length > 2){
-        var colorP = window.prompt("Se detectaron más de dos instrucciones en el esquema de movimiento. ¿Desea usar colores distintos para cada ejecución? (Y/N)\n\nEsto hará que las sucesiones se cancelen si llegan a colisionar.\n\n(Por defecto: N).");
-        colorP = colorP.toUpperCase();
-        if (colorP == "Y") {
-            colorP = "Y";
-            cMsg = "u otra ejecución ";
-        } else if (colorP == "N") {
-            colorP = "N";
-        } else {
-            alert("Respuesta inválida. Estableciendo valor por defecto.")
-            colorP = "N";
+        if (schem.split("").length > 2) {
+            var colorP = window.prompt("Se detectaron más de dos instrucciones en el esquema de movimiento. ¿Desea usar colores distintos para cada ejecución? (Y/N)\n\nEsto hará que las sucesiones se cancelen si llegan a colisionar.\n\n(Por defecto: N).");
+            colorP = colorP.toUpperCase();
+            if (colorP == "Y") {
+                colorP = "Y";
+                cMsg = "u otra ejecución ";
+            } else if (colorP == "N") {
+                colorP = "N";
+            } else {
+                alert("Respuesta inválida. Estableciendo valor por defecto.")
+                colorP = "N";
+            }
         }
-    }
 
     } else if (opt == "N") {
         alert("Se establecerá todo por defecto.")
@@ -322,15 +322,37 @@
         }
     }
     var cellspacing = 1;
+
     document.addEventListener("auxclick", cellSwitch, false)
     document.addEventListener('touchstart', function (e) {
         if (e.touches.length == 2) {
             cellSwitch();
         }
-        if (e.touches.length > 2) {
+        if (e.touches.length == 2) {
             Pause()
         }
-    });
+
+    }, false);
+
+    var touchDelay;
+    document.addEventListener("mousedown", function (e) {
+        touchDelay = setTimeout(hide, 1000);
+    }, false)
+    document.addEventListener("mouseup", function () {
+        clearTimeout(touchDelay)
+    }, false);
+
+    var hidden = 0;
+    function hide() {
+        let stepsH = document.getElementById("stepsH");
+        if (hidden == 0) {
+            hidden = 1;
+            stepsH.style.opacity = "0";
+        } else {
+            hidden = 0
+            stepsH.style.opacity = "50%";
+        }
+    }
 
     function cellSwitch() {
         document.oncontextmenu = (ev) => {
